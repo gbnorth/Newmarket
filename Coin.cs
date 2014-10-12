@@ -14,4 +14,6 @@ public class Coin : MonoBehaviour {
 	void Update () {
 	
 	}
+
+	//this is my first change in GIT
 }
