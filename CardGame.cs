@@ -25,6 +25,7 @@ public class CardGame : MonoBehaviour
 	public Card cardInCheck;
 
 	public Transform Player1;
+	public Transform Player2;
 
 	public Transform playerPrefab;
 
@@ -33,27 +34,24 @@ public class CardGame : MonoBehaviour
 
 	
 	
-	/*enum GameState
+	enum GameState
 	{
-		Invalid,
-		Started,
-		PlayerBusted,
-		Resolving,
-		DealerWins,
-		PlayerWins,
-		NobodyWins,
-	};*/
+		NOTSTARTED,
+		DEALING,
+		WAITINGFORPLAYER
+	};
 
-	//GameState m_state;
+	GameState m_state;
 	
 	GameObject [] Buttons;
 	
 	// Use this for initialization
 	void Start ()
 	{
-		//m_state = GameState.Invalid;
+		m_state = GameState.NOTSTARTED;
 		Deck.Initialize();
 		Player1 = Instantiate (playerPrefab) as Transform;
+		Player2 = Instantiate (playerPrefab) as Transform;
 		//PlayerWins = this.transform.Find("MessagePlayerWins").gameObject;
 		//DealerWins = this.transform.Find("MessageDealerWins").gameObject;
 		//NobodyWins = this.transform.Find("MessageTie").gameObject;
@@ -105,6 +103,22 @@ public class CardGame : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
+		GetState ();
+		switch (m_state) 
+		{
+		
+		case GameState.DEALING:
+			StartCoroutine (OnDeal());
+
+			break;
+
+		case GameState.WAITINGFORPLAYER:
+			//do something
+			break;
+
+
+
+				}
 		/*if (Input.GetKeyDown(KeyCode.F1))
 		{
 			OnReset();
@@ -186,8 +200,9 @@ public class CardGame : MonoBehaviour
 
 
 
-	void DealPlayer()
+	void DealPlayer(Transform whichPlayer, float handPosY)
 	{
+
 		CardDef c1 = Deck.Pop();
 		if (c1 != null)
 		{
@@ -209,15 +224,15 @@ public class CardGame : MonoBehaviour
 			newCard.Definition = c1;
 			newObj.transform.parent = Deck.transform;
 			newCard.TryBuild();
-			float x = -3+(m_player.Count)*1.5f;
+			float x = -3+(m_player.Count)*0.5f;
 			float y = -3-m_player.Count*0.15f;
 			float z = (m_player.Count)*-0.1f;
 			//newObj.transform.position = new Vector3(x,-3,z);
 			m_player.Add(newCard);
 			Vector3 deckPos = GetDeckPosition();
 			newCard.transform.position = deckPos;
-			newCard.SetFlyTarget(deckPos,new Vector3(x,-2,z),FlyTime);
-			newCard.transform.parent = Player1.transform;
+			newCard.SetFlyTarget(deckPos,new Vector3(x,handPosY,z),FlyTime);
+			newCard.transform.parent = whichPlayer.transform;
 			getPlayerLowCard();
 			//setTargetCardValues();
 
@@ -314,10 +329,11 @@ public class CardGame : MonoBehaviour
 			HitDealer();
 			yield return new WaitForSeconds(DealTime);
 			for (int i = 0; i < 7; i++) {
-				DealPlayer();
+				DealPlayer(Player1, -2f);
+				DealPlayer(Player2, -10f);
 			}
 
-			//m_state = GameState.Started;
+			m_state = GameState.WAITINGFORPLAYER;
 		}
 	}
 
@@ -501,6 +517,10 @@ public class CardGame : MonoBehaviour
 			}
 		}
 	}*/
+
+	void GetState(){
+		Debug.Log (m_state.ToString ());
+		}
 	
 	public void OnButton(string msg)
 	{
@@ -508,14 +528,16 @@ public class CardGame : MonoBehaviour
 		switch (msg)
 		{
 		case "Deal":
-			StartCoroutine(OnDeal());
+			//Switch game state to dealing
+			m_state = GameState.DEALING;
+			//StartCoroutine(OnDeal());
 			break;
-		case "checkCards":
-			OnCheckCards();
-			break;
-		case "putLowCard":
-			StartCoroutine(PutLowCard());
-			break;
+		//case "checkCards":
+			//OnCheckCards();
+			//break;
+		//case "putLowCard":
+			//StartCoroutine(PutLowCard());
+			//break;
 		}
 	}
 
