@@ -7,6 +7,7 @@ public class PlayerWithState : MonoBehaviour
 
 
 	public string mPlayerName;
+	public float myXpos = 0f;
 
 	//contructor
 
@@ -80,7 +81,7 @@ public class PlayerWithState : MonoBehaviour
 
 	// Use this for initialization
 	void Start () {
-	
+
 	}
 	
 	// Update is called once per frame
@@ -90,11 +91,15 @@ public class PlayerWithState : MonoBehaviour
 
 
 	void OnGUI(){
-		if(GUI.Button(new Rect(10,10,50,50),"Next")){
+
+
+
+		if(GUI.Button(new Rect(myXpos,0,50,50),"Next")){
 			NextState(null);
+
 		}
 
-		GUI.Label (new Rect (10, 75, 150, 50), this.GetPlayerState ());
+		//GUI.Label (new Rect (10, 75, 150, 50), this.GetPlayerState ());
 
 		}
 }
